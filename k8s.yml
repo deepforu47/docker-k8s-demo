@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: hello-flask-change-service
+  name: hello-demo-service
 spec:
   selector:
-    app: hello-python
+    app: hello-demo
   ports:
   - protocol: "TCP"
     port: 8080
@@ -15,20 +15,20 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hello-python
+  name: hello-demo
 spec:
   selector:
     matchLabels:
-      app: hello-python
+      app: hello-demo
   replicas: 3
   template:
     metadata:
       labels:
-        app: hello-python
+        app: hello-demo
     spec:
       containers:
-      - name: flask-change
-        image: flask-change:latest
-        imagePullPolicy: Never
+      - name: demo
+        image: deepforu47/dockerk8sdemo:1.0
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080

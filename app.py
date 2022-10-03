@@ -1,43 +1,42 @@
+import os
 from flask import Flask
-from flask import jsonify
+from flask import render_template
+import socket
+import random
+import os
+
 app = Flask(__name__)
 
-def change(amount):
-    # calculate the resultant change and store the result (res)
-    res = []
-    coins = [1,5,10,25] # value of pennies, nickels, dimes, quarters
-    coin_lookup = {25: "quarters", 10: "dimes", 5: "nickels", 1: "pennies"}
+color_codes = {
+    "red": "#e74c3c",
+    "green": "#16a085",
+    "blue": "#2980b9",
+    "blue2": "#30336b",
+    "pink": "#be2edd",
+    "darkblue": "#130f40"
+}
 
-    # divide the amount*100 (the amount in cents) by a coin value
-    # record the number of coins that evenly divide and the remainder
-    coin = coins.pop()
-    num, rem  = divmod(int(amount*100), coin)
-    # append the coin type and number of coins that had no remainder
-    res.append({num:coin_lookup[coin]})
+color = os.environ.get('APP_COLOR') or random.choice(["red","green","blue","blue2","darkblue","pink"])
+host = socket.gethostname()
+print(host)
+print(color)
 
-    # while there is still some remainder, continue adding coins to the result
-    while rem > 0:
-        coin = coins.pop()
-        num, rem = divmod(rem, coin)
-        if num:
-            if coin in coin_lookup:
-                res.append({num:coin_lookup[coin]})
-    return res
+@app.route("/")
+def main():
+    #return 'Hello'
+    print(host)
+    print(color)
+    return render_template('hello.html', host=host, color=color_codes[color])
 
+@app.route('/color/<new_color>')
+def new_color(new_color):
+    return render_template('hello.html', name=socket.gethostname(), color=color_codes[new_color])
 
-@app.route('/')
-def hello():
-    """Return a friendly HTTP greeting."""
-    print("I am inside hello world")
-    return 'Hello World! I can make change at route: /change'
+@app.route('/read_file')
+def read_file():
+    f = open("/app/testfile.txt")
+    contents = f.read()
+    return render_template('hello.html', name=socket.gethostname(), contents=contents, color=color_codes[color])
 
-@app.route('/change/<dollar>/<cents>')
-def changeroute(dollar, cents):
-    print(f"Make Change for {dollar}.{cents}")
-    amount = f"{dollar}.{cents}"
-    result = change(float(amount))
-    return jsonify(result)
-
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port="8080")
