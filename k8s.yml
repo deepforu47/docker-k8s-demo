@@ -7,7 +7,7 @@ spec:
     app: hello-demo
   ports:
   - protocol: "TCP"
-    port: 8080
+    port: 8180
     targetPort: 8080
   type: LoadBalancer
 
